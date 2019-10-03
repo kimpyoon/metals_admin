@@ -1,0 +1,21 @@
+@keyframes slideInDown
+  from
+    -webkit-transform translate3d(-50%, -100%, 0)
+    transform translate3d(-50%, -100%, 0)
+    visibility visible
+  to
+    -webkit-transform translate3d(-50%, -50%, 0)
+    transform translate3d(-50%, -50%, 0)
+
+@-webkit-keyframes slideInDown
+  from
+    -webkit-transform translate3d(-50%, -100%, 0)
+    transform translate3d(-50%, -100%, 0)
+    visibility visible
+
+  to
+    -webkit-transform translate3d(-50%, -50%, 0)
+    transform translate3d(-50%, -50%, 0)
+
+.animateSlideInDown
+  animation slideInDown 300ms ease-out
