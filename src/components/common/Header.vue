@@ -9,7 +9,7 @@
     <div class="header-right">
       <div class="header-user-con">
         <!-- 用户头像 -->
-        <div class="user-avator"><img :src="icon.avatar"></div>
+        <div class="user-avator"><img :src="userInfo.avatarUrl"></div>
         <!-- 用户名下拉菜单 -->
         <el-dropdown class="user-name" trigger="click" @command="handleCommand">
           <span class="el-dropdown-link">
@@ -26,16 +26,12 @@
 <script>
 import bus from './bus'
 import { getToken } from '@/utils/auth'
-import AVATAR from '@/static/img/img.jpg'
 export default {
   data () {
     return {
       collapse: false,
       userInfo: {
         username: '管理员'
-      },
-      icon: {
-        avatar: AVATAR
       }
     }
   },
