@@ -51,8 +51,11 @@ export default new Router({
         },
         {
           path: '/business/list',
-          name: 'business',
           component: () => import('./views/business/index.vue')
+        },
+        {
+          path: '/business/apply',
+          component: () => import('./views/business/apply/index.vue')
         },
         {
           path: '/404',

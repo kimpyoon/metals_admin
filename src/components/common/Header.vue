@@ -9,7 +9,7 @@
     <div class="header-right">
       <div class="header-user-con">
         <!-- 用户头像 -->
-        <div class="user-avator"><img :src="userInfo.avatarUrl"></div>
+        <div class="user-avator"><i class="el-icon-user-solid"></i></div>
         <!-- 用户名下拉菜单 -->
         <el-dropdown class="user-name" trigger="click" @command="handleCommand">
           <span class="el-dropdown-link">
@@ -126,7 +126,8 @@ export default {
   margin-left 16px
   border-left 1px solid #D8D8D8
 .user-avator
-  margin-left 20px
+  font-size 20px
+  color #606266
 .user-avator img
   display block
   width 24px

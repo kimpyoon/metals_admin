@@ -88,7 +88,11 @@ export default {
           subs: [
             {
               index: '/business/list',
-              title: '查看商家'
+              title: '商家管理'
+            },
+            {
+              index: '/business/apply',
+              title: '商家申请'
             }
           ]
         }

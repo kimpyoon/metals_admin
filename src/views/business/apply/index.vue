@@ -66,22 +66,14 @@
             <div class="business">
               <el-image
                 class="coverImage"
-                :src="scope.row.storekeeper.avatarUrl"
-                :preview-src-list="[scope.row.storekeeper.avatarUrl]">
+                :src="scope.row.userAvatarUrl"
+                :preview-src-list="[scope.row.userAvatarUrl]">
                 <div slot="error" style="font-size: 30px;">
                   <i class="el-icon-picture-outline"></i>
                 </div>
               </el-image>
               <div>{{scope.row.storekeeper.realName}}</div>
             </div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          :show-overflow-tooltip="true"
-          label="省市"
-          align="center">
-          <template slot-scope="scope">
-            {{scope.row.provinceId}} {{scope.row.cityId}}
           </template>
         </el-table-column>
         <el-table-column
@@ -96,8 +88,8 @@
           label="操作"
           align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="toDetail(scope.row)">查看</el-button>
-            <el-button v-if="scope.row.status > 2" type="text" @click="lock(scope.row)">{{scope.row.status === 5 ? '解封' : '封停'}}</el-button>
+            <el-button v-if="scope.row.status === 1" type="text" @click="toggleSuccess(scope.row.id)">通过</el-button>
+            <el-button v-if="scope.row.status === 1" type="text" @click="toggleFail(scope.row.id)">不通过</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -113,14 +105,12 @@
         </el-pagination>
       </div>
     </template>
-    <Dialog @hideDialog="showDialog = false" @refresh="getData(searchParams)" v-if="showDialog" :currentData="currentData"></Dialog>
   </div>
 </template>
 
 <script>
 import { formatDate } from '@/utils/formatDate.js'
 import { formatDateTime } from '@/utils/formatDateTime.js'
-import Dialog from './components/dialog.vue'
 export default {
   data () {
     return {
@@ -141,9 +131,7 @@ export default {
         realName: '',
         status: '',
         page: 0
-      },
-      currentData: {},
-      showDialog: false
+      }
     }
   },
   filters: {
@@ -180,13 +168,8 @@ export default {
       this.searchParams.page = val - 1
       this.getData(this.searchParams)
     },
-    toDetail (row) {
-      this.currentData = row
-      this.showDialog = true
-    },
-    lock (row) {
-      let text = row.status === 5 ? '解封' : '封停'
-      this.$confirm(`是否${text}?`, '提示', {
+    toggleSuccess (id) {
+      this.$confirm('是否设为成功?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -194,7 +177,34 @@ export default {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true
             instance.confirmButtonText = '执行中...'
-            const url = `/api/metals/store/lock/${row.id}`
+            const url = `/api/metals/store/apply/success/${id}`
+            this.$axios.get(url).then(res => {
+              done()
+              instance.confirmButtonLoading = false
+              instance.confirmButtonText = '确定'
+              this.getData(this.searchParams)
+              this.$message.success('已处理')
+            }).catch(() => {
+              instance.confirmButtonLoading = false
+              instance.confirmButtonText = '确定'
+              this.$message.error('系统错误')
+            })
+          } else {
+            done()
+          }
+        }
+      }).catch(() => {})
+    },
+    toggleFail (id) {
+      this.$confirm('是否设为不通过?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const url = `/api/metals/store/apply/fail/${id}`
             this.$axios.get(url).then(res => {
               done()
               instance.confirmButtonLoading = false
@@ -223,7 +233,7 @@ export default {
           page: params.page
         }
       }
-      let url = `/api/metals/store/page?pagesize=20&pn=${params.page}`
+      let url = `/api/metals/store/apply/page?pagesize=20&pn=${params.page}`
       if (params.userName && params.userName.replace(/\s+/g, '')) { url += `&userName=${params.userName.trim()}` }
       if (params.name && params.name.replace(/\s+/g, '')) { url += `&name=${params.name.trim()}` }
       if (params.realName && params.realName.replace(/\s+/g, '')) { url += `&realName=${params.realName.trim()}` }
@@ -241,7 +251,7 @@ export default {
     }
   },
   components: {
-    Dialog
+
   }
 }
 </script>
