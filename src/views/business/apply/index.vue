@@ -45,6 +45,7 @@
           <template slot-scope="scope">
             <el-image
               class="coverImage"
+              fit="contain"
               :src="scope.row.avatarUrl"
               :preview-src-list="[scope.row.avatarUrl]">
               <div slot="error" style="font-size: 30px;">
@@ -66,13 +67,14 @@
             <div class="business">
               <el-image
                 class="coverImage"
+                fit="cover"
                 :src="scope.row.userAvatarUrl"
                 :preview-src-list="[scope.row.userAvatarUrl]">
                 <div slot="error" style="font-size: 30px;">
                   <i class="el-icon-picture-outline"></i>
                 </div>
               </el-image>
-              <div>{{scope.row.storekeeper.realName}}</div>
+              <div>{{scope.row.realName}}</div>
             </div>
           </template>
         </el-table-column>
@@ -178,7 +180,7 @@ export default {
             instance.confirmButtonLoading = true
             instance.confirmButtonText = '执行中...'
             const url = `/api/metals/store/apply/success/${id}`
-            this.$axios.get(url).then(res => {
+            this.$axios.post(url).then(res => {
               done()
               instance.confirmButtonLoading = false
               instance.confirmButtonText = '确定'
@@ -205,7 +207,7 @@ export default {
             instance.confirmButtonLoading = true
             instance.confirmButtonText = '执行中...'
             const url = `/api/metals/store/apply/fail/${id}`
-            this.$axios.get(url).then(res => {
+            this.$axios.post(url).then(res => {
               done()
               instance.confirmButtonLoading = false
               instance.confirmButtonText = '确定'

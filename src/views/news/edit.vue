@@ -349,6 +349,8 @@ export default {
           .el-upload-list__item
             width 110px
             height 110px
+          .el-upload-list__item-thumbnail
+            object-fit contain
         >>>.el-upload--picture-card
           margin 0 8px 8px 0
           width 110px

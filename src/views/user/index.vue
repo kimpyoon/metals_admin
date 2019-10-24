@@ -48,7 +48,7 @@
           label="头像"
           align="center">
           <template slot-scope="scope">
-            <img class="avatar" :src="scope.row.avatarUrl">
+            <img style="object-fit: contain;" class="avatar" :src="scope.row.avatarUrl">
           </template>
         </el-table-column>
         <el-table-column

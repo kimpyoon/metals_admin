@@ -203,8 +203,11 @@ export default {
           top 0
           left 0
         .avatar
-          width 60px
-          height 60px
+          object-fit contain
+          min-width 60px
+          min-height 60px
+          max-width 180px
+          max-height 180px
           display block
     .footer
       height 59px

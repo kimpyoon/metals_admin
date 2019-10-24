@@ -3,7 +3,7 @@
     <div class="dialog animateSlideInDown">
       <div class="content">
         <div class="card">
-          <el-image :src="goodsData.image">
+          <el-image :src="goodsData.image" fit="contain">
             <div slot="placeholder" class="image-slot">
               加载中<span class="dot">...</span>
             </div>

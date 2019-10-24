@@ -19,7 +19,7 @@
         <div class="other">
           <div class="desc">关于店铺：<span style="color: #969696;">{{currentData.desc}}</span></div>
           <div class="imagesDesc">
-            <el-image :src="item" v-for="(item, index) in imagesDesc" :key="index">
+            <el-image :src="item" v-for="(item, index) in imagesDesc" :key="index" fit="contain">
               <div slot="placeholder" class="image-slot">
                 加载中<span class="dot">...</span>
               </div>
@@ -43,7 +43,7 @@
           <div class="business">
             <div class="label">经营商家</div>
             <div class="business-item">
-              <el-image :src="currentData.storekeeper.avatarUrl">
+              <el-image :src="currentData.storekeeper.avatarUrl" fit="cover">
                 <div slot="placeholder" class="image-slot">
                   加载中<span class="dot">...</span>
                 </div>

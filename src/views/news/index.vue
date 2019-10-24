@@ -33,6 +33,7 @@
             <el-image
               v-for="(item, index) in scope.row.image.split(',')"
               class="coverImage"
+              fit="contain"
               :src="item"
               :key="index"
               :preview-src-list="scope.row.image.split(',')">

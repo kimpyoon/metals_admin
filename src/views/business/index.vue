@@ -46,6 +46,7 @@
             <el-image
               class="coverImage"
               :src="scope.row.avatarUrl"
+              fit="contain"
               :preview-src-list="[scope.row.avatarUrl]">
               <div slot="error" style="font-size: 30px;">
                 <i class="el-icon-picture-outline"></i>
@@ -66,6 +67,7 @@
             <div class="business">
               <el-image
                 class="coverImage"
+                fit="cover"
                 :src="scope.row.storekeeper.avatarUrl"
                 :preview-src-list="[scope.row.storekeeper.avatarUrl]">
                 <div slot="error" style="font-size: 30px;">
@@ -195,7 +197,7 @@ export default {
             instance.confirmButtonLoading = true
             instance.confirmButtonText = '执行中...'
             const url = `/api/metals/store/lock/${row.id}`
-            this.$axios.get(url).then(res => {
+            this.$axios.post(url).then(res => {
               done()
               instance.confirmButtonLoading = false
               instance.confirmButtonText = '确定'
