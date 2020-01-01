@@ -2,105 +2,100 @@
   <div>
     <div class="searchBox">
       <div class="searchItem">
-        <label class="el-form-item__label">商家名</label>
-        <div class="el-form-item__content"><el-input v-model="masterInput" placeholder="请输入"></el-input ></div>
+        <label class="el-form-item__label">开始日期</label>
+        <div class="el-form-item__content">
+          <el-date-picker
+            v-model="startStr"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
+        </div>
       </div>
       <div class="searchItem">
-        <label class="el-form-item__label">申请人姓名</label>
-        <div class="el-form-item__content"><el-input v-model="nameInput" placeholder="请输入"></el-input></div>
-      </div>
-      <div class="searchItem">
-        <label class="el-form-item__label">店铺名</label>
-        <div class="el-form-item__content"><el-input v-model="storeInput" placeholder="请输入"></el-input></div>
+        <label class="el-form-item__label">截止日期</label>
+        <div class="el-form-item__content">
+          <el-date-picker
+            v-model="endStr"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
+        </div>
       </div>
       <div class="searchItem">
         <label class="el-form-item__label">状态</label>
         <el-select class="el-form-item__content" v-model="statusInput" placeholder="请选择">
           <el-option label="刚提交" :value="1"></el-option>
-          <el-option label="已开始" :value="2"></el-option>
-          <el-option label="未开始" :value="3"></el-option>
-          <el-option label="不通过" :value="4"></el-option>
-          <el-option label="已结束" :value="5"></el-option>
-          <el-option label="已取消" :value="6"></el-option>
+          <el-option label="操作成功" :value="2"></el-option>
+          <el-option label="操作失败" :value="3"></el-option>
+          <el-option label="进行中" :value="4"></el-option>
         </el-select>
       </div>
-    </div>
-    <div class="searchBox">
       <div class="handleBox">
         <div class="handleItem">
           <el-button class="default" size="normal" @click="reset">重置</el-button>
         </div>
         <div class="handleItem">
-          <el-button class="primary" size="normal" @click="getData({ type: 'search', name: nameInput, masterName: masterInput, storeName: storeInput, status: statusInput, page: 0 })">搜索</el-button>
+          <el-button class="primary" size="normal" @click="getData({ type: 'search', startStr: startStr, endStr: endStr, status: statusInput, page: 0 })">搜索</el-button>
         </div>
       </div>
     </div>
+    <el-tag type="danger" style="width: 100%; border-radius: 0;" size="normal">提现申请会审核店铺当前账户余额，如果当前账户余额与申请时账户余额不一致，该扣款将无法成功</el-tag>
     <template>
       <el-table
         :data="tableData.data"
-        :row-class-name="tableRowClassName"
         :header-cell-style="{background:'#FAFAFA'}"
         v-loading="loading"
         :highlight-current-row="false"
         style="width: 100%">
         <el-table-column
-          prop="storeName"
           :show-overflow-tooltip="true"
+          align="center"
           label="店铺名">
-        </el-table-column>
-        <el-table-column
-          prop="masterName"
-          :show-overflow-tooltip="true"
-          label="商家名">
-        </el-table-column>
-        <el-table-column
-          prop="name"
-          label="申请姓名"
-          align="center">
-        </el-table-column>
-        <el-table-column
-          prop="type"
-          label="类型"
-          align="center">
           <template slot-scope="scope">
-            {{scope.row.type | formatType}}
+            {{scope.row.store.name}}
           </template>
         </el-table-column>
         <el-table-column
-          prop="startTime"
-          label="开始时间"
-          width="140"
+          label="姓名"
           align="center">
           <template slot-scope="scope">
-            {{formateDate(scope.row.startTime)}}
+            {{scope.row.store.storekeeper.realName}}
           </template>
         </el-table-column>
         <el-table-column
-          prop="endTime"
-          label="结束时间"
-          width="140"
+          label="手机号"
           align="center">
           <template slot-scope="scope">
-            {{formateDate(scope.row.endTime)}}
+            {{scope.row.store.storekeeper.username}}
           </template>
         </el-table-column>
         <el-table-column
-          label="下架/上架"
-          width="100"
+          prop="amount"
+          label="账户余额"
           align="center">
           <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.toggle"
-              @change="toggle(scope.row)"
-              active-color="#409eff"
-              inactive-color="#dcdfe6">
-            </el-switch>
+            {{scope.row.beforeAmount | formatMoney}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="amount"
+          label="提现金额"
+          align="center">
+          <template slot-scope="scope">
+            {{scope.row.amount | formatMoney}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="created"
+          label="申请时间"
+          align="center">
+          <template slot-scope="scope">
+            {{formateDate(scope.row.created)}}
           </template>
         </el-table-column>
         <el-table-column
           label="状态"
           prop="status"
-          width="100"
           align="center">
           <template slot-scope="scope">
             {{scope.row.status | formatStatus}}
@@ -108,14 +103,10 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="200"
-          fixed="right"
           align="center">
           <template slot-scope="scope">
-            <el-button type="text" @click="toDetail(scope.row)">查看</el-button>
-            <el-button v-if="scope.row.status === 1" type="text" @click="toggleSuccess(scope.row.id)">成功</el-button>
-            <el-button v-if="scope.row.status === 1" type="text" @click="toggleFail(scope.row.id)">失败</el-button>
-            <el-button type="text" @click="update(scope.row)">更新</el-button>
+            <el-button v-if="scope.row.status === 1" type="text" @click="toggleHandle(scope.row, 'success', '成功')">成功</el-button>
+            <el-button v-if="scope.row.status === 1" type="text" @click="toggleHandle(scope.row, 'fail', '失败')">失败</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -131,22 +122,17 @@
         </el-pagination>
       </div>
     </template>
-    <Dialog @hideDialog="showDialog = false" @refresh="getData(searchParams)" :apiType="'store'" v-if="showDialog" :currentData="currentData"></Dialog>
-    <store-detail @hideDialog="showDetail= false" v-if="showDetail" :currentData="currentData"></store-detail>
   </div>
 </template>
 
 <script>
 import { formatDate } from '@/utils/formatDate.js'
 import { formatDateTime } from '@/utils/formatDateTime.js'
-import Dialog from './dialog.vue'
-import StoreDetail from './storeDetail.vue'
 export default {
   data () {
     return {
-      masterInput: '',
-      nameInput: '',
-      storeInput: '',
+      startStr: '',
+      endStr: '',
       statusInput: '',
       tableData: {
         data: [],
@@ -156,62 +142,46 @@ export default {
       loading: true,
       currentPage: 1,
       searchParams: {
-        masterName: '',
-        name: '',
-        storeName: '',
+        startStr: '',
+        endStr: '',
         status: '',
         page: 0
       },
       currentData: {},
-      showDialog: false,
-      showDetail: false
+      showDialog: false
     }
   },
   filters: {
     formatStatus (val) {
       if (val === 1) {
-        return '刚提交'
+        return '刚申请'
       } else if (val === 2) {
-        return '已开始'
+        return '操作成功'
       } else if (val === 3) {
-        return '未开始'
+        return '操作失败'
       } else if (val === 4) {
-        return '不通过'
-      } else if (val === 5) {
-        return '已结束'
-      } else if (val === 6) {
-        return '已取消'
+        return '进行中'
       } else {
         return val
       }
     },
-    formatType (val) {
-      if (val === 1) {
-        return '自主配图'
-      } else if (val === 2) {
-        return '官方营销'
-      } else {
-        return val
+    formatMoney (value) {
+      if (value) {
+        return (value / 100).toFixed(2)
       }
+      return '0.00'
     }
   },
   mounted () {
     this.getData(this.searchParams)
   },
   methods: {
-    tableRowClassName ({ row, rowIndex }) {
-      if (rowIndex % 2 !== 0) {
-        return 'single-row'
-      } else {
-        return ''
-      }
-    },
     formateDate (t) {
       const date = new Date(t)
       return formatDate(date)
     },
-    formateDateTime (row, column) {
-      const date = new Date(row.created)
+    formateDateTime (t) {
+      const date = new Date(t)
       return formatDateTime(date)
     },
     handleCurrentChange (val) {
@@ -221,25 +191,19 @@ export default {
     },
     toDetail (row) {
       this.currentData = row
-      this.showDetail = true
-    },
-    update (row) {
-      this.currentData = row
       this.showDialog = true
     },
-    toggle (row) {
-      row.toggle = !row.toggle
-      let text = row.toggle ? '下架' : '上架'
-      this.$confirm(`是否确认${text}？`, '提示', {
+    toggleHandle (row, type, text) {
+      this.$confirm(`是否执行${text}操作?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'info',
+        type: 'warning',
         beforeClose: (action, instance, done) => {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true
             instance.confirmButtonText = '执行中...'
-            const url = `/api/admin/advert/store/handle/${row.id}/toggle`
-            this.$axios.put(url).then(res => {
+            const url = `/api/metals/store/account/handle/${row.id}/${type}`
+            this.$axios.post(url).then(res => {
               done()
               instance.confirmButtonLoading = false
               instance.confirmButtonText = '确定'
@@ -256,51 +220,19 @@ export default {
         }
       }).catch(() => {})
     },
-    toggleSuccess (id) {
-      this.$confirm('是否继续设为成功?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        const url = `/api/admin/advert/store/handle/${id}/success`
-        this.$axios.post(url).then(res => {
-          this.getData(this.searchParams)
-          this.$message.success('已处理')
-        }).catch(() => {
-          this.$message.error('系统错误')
-        })
-      }).catch(() => {})
-    },
-    toggleFail (id) {
-      this.$confirm('是否继续设为失败?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        const url = `/api/admin/advert/store/handle/${id}/fail`
-        this.$axios.post(url).then(res => {
-          this.getData(this.searchParams)
-          this.$message.success('已处理')
-        }).catch(() => {
-          this.$message.error('系统错误')
-        })
-      }).catch(() => {})
-    },
     getData (params) {
       this.loading = true
       if (params.type === 'search') {
         this.searchParams = {
-          masterName: params.masterName,
-          name: params.name,
-          storeName: params.storeName,
+          startStr: params.startStr,
+          endStr: params.endStr,
           status: params.status,
           page: params.page
         }
       }
-      let url = `/api/admin/advert/store/list?pagesize=20&pn=${params.page}`
-      if (params.masterName && params.masterName.replace(/\s+/g, '')) { url += `&masterName=${params.masterName.trim()}` }
-      if (params.name && params.name.replace(/\s+/g, '')) { url += `&name=${params.name.trim()}` }
-      if (params.storeName && params.storeName.replace(/\s+/g, '')) { url += `&storeName=${params.storeName.trim()}` }
+      let url = `/api/metals/store/account/page?pagesize=20&pn=${params.page}`
+      if (params.startStr) { url += `&startStr=${params.startStr}` }
+      if (params.endStr) { url += `&endStr=${params.endStr}` }
       if (params.status) { url += `&status=${params.status}` }
       this.$axios.get(url).then(res => {
         this.loading = false
@@ -308,15 +240,13 @@ export default {
       }).catch(() => { this.loading = false })
     },
     reset () {
-      this.masterInput = ''
-      this.nameInput = ''
-      this.storeInput = ''
+      this.startStr = ''
+      this.endStr = ''
       this.statusInput = ''
     }
   },
   components: {
-    Dialog,
-    StoreDetail
+
   }
 }
 </script>
@@ -330,13 +260,12 @@ export default {
   display flex
   align-items center
   flex-wrap wrap
-  justify-content space-between
   .searchItem
     margin-right 20px
     height 40px
     overflow hidden
     .el-form-item__label
-      // width 7em
+      // width 5em
       color #1D3861
       text-align justify
       &:after
@@ -345,6 +274,11 @@ export default {
         width 100%
     >>>.el-form-item__content
       display inline-block
+    >>>.el-date-editor
+      .el-input__inner
+        padding-left 30px
+        padding-right 10px
+        width 100%
     >>>.el-input__inner
       padding-left 20px
       height 30px
@@ -367,8 +301,6 @@ export default {
         font-size 14px
       &:last-child
         margin-right 0
-  &:first-child
-    margin-bottom 10px
 .default
   width 100%
   color #1D3861
@@ -390,6 +322,22 @@ export default {
     .el-button
       &+.el-button
         margin-left 22px
+    .cell
+      .coverImage
+        display flex
+        align-items center
+        justify-content center
+        width 50px
+        height 50px
+      .business
+        display flex
+        align-items center
+        justify-content center
+        .coverImage
+          width 36px
+          height 36px
+          border-radius 50%
+          overflow hidden
 >>>.el-table--mini
 >>>.el-table--small
 >>>.el-table__expand-icon

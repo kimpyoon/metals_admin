@@ -50,6 +50,19 @@
           align="center">
         </el-table-column>
         <el-table-column
+          label="下架/上架"
+          width="100"
+          align="center">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.status"
+              @change="toggle(scope.row)"
+              active-color="#409eff"
+              inactive-color="#dcdfe6">
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column
           label="操作"
           width="160"
           align="center">
@@ -134,6 +147,35 @@ export default {
       this.editType = type
       this.editForm = row
     },
+    toggle (row) {
+      row.status = !row.status
+      let text = row.status ? '下架' : '上架'
+      this.$confirm(`是否确认${text}？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const url = `/api/metals/news/toggle/${row.id}`
+            this.$axios.put(url).then(res => {
+              done()
+              instance.confirmButtonLoading = false
+              instance.confirmButtonText = '确定'
+              this.getNews()
+              this.$message.success('已处理')
+            }).catch(() => {
+              instance.confirmButtonLoading = false
+              instance.confirmButtonText = '确定'
+              this.$message.error('系统错误')
+            })
+          } else {
+            done()
+          }
+        }
+      }).catch(() => {})
+    },
     deleteHandle (row) {
       this.showDelete = true
       this.deleteUri = `/api/metals/news/delete/${row.id}`
@@ -143,6 +185,11 @@ export default {
       const url = `/api/metals/news/page?pn=${this.currentPage - 1}&pagesize=20`
       this.$axios.get(url).then(res => {
         this.loading = false
+        if (res.data.length > 0) {
+          res.data.forEach(item => {
+            item.status = item.status === 0
+          })
+        }
         this.tableData = res
       }).catch(() => {
         this.loading = false
@@ -191,7 +238,12 @@ export default {
   width 100%
 >>>.el-table
   .cell
+    display flex
+    align-items center
     .coverImage
+      display flex
+      justify-content center
+      align-items center
       width 60px
       height 60px
   .firstCell

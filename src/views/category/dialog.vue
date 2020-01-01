@@ -76,6 +76,7 @@ export default {
       this.ruleForm.icon = this.thridItemData.image
       this.ruleForm.name = this.thridItemData.name
       this.imageUrl = this.thridItemData.image
+      this.isUploadSuccess = true
     }
     if (process.env.NODE_ENV === 'development') {
       this.uploadApi = `/api/api/metals/common/upload?type=icon`
@@ -93,7 +94,7 @@ export default {
           if (this.isUploadSuccess) {
             let params = {
               level: 3,
-              previousId: 2,
+              previousId: this.thridItemData.id,
               name: this.ruleForm.name,
               image: this.ruleForm.icon
             }

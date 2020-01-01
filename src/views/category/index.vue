@@ -4,7 +4,7 @@
     <el-button
       type="primary"
       size="mini"
-      @click="() => addRoot()">
+      @click="addRoot()">
       添加一级菜单
     </el-button>
   </div>
@@ -23,27 +23,27 @@
               type="text"
               v-if="node.level !== 3"
               size="mini"
-              @click="() => append(data)">
+              @click="append(data)">
               添加子菜单
             </el-button>
             <el-button
               type="text"
               v-if="node.level === 3"
               size="mini"
-              @click="() => append(data)">
+              @click="append(data)">
               编辑
             </el-button>
             <el-button
               type="text"
               v-if="node.level !== 3"
               size="mini"
-              @click="() => editName(data)">
+              @click="editName(data)">
               重命名
             </el-button>
             <el-button
               type="text"
               size="mini"
-              @click="() => remove(node, data)">
+              @click="remove(node, data)">
               删除菜单
             </el-button>
           </span>
@@ -112,10 +112,9 @@ export default {
           inputErrorMessage: '请输入菜单名称'
         }).then(({ value }) => {
           const loading = this.loading('添加中')
-          let params = {}
-          params = {
+          let params = {
             level: 2,
-            previousId: 1,
+            previousId: data.id,
             name: value
           }
           this.addRequest(params).then(res => {
@@ -138,7 +137,7 @@ export default {
       }
     },
     addRequest (params) {
-      return Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         this.$axios.post('/api/metals/catalog/add', params).then(res => {
           resolve(res)
         }).catch(err => { reject(err) })

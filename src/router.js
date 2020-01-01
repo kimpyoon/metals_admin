@@ -30,6 +30,11 @@ export default new Router({
           component: () => import('./views/transaction/index.vue')
         },
         {
+          path: '/transaction/detail/:orderNo',
+          name: 'transactionDetail',
+          component: () => import('./views/transaction/detail.vue')
+        },
+        {
           path: '/news',
           name: 'news',
           component: () => import('./views/news/index.vue')
@@ -56,6 +61,10 @@ export default new Router({
         {
           path: '/business/apply',
           component: () => import('./views/business/apply/index.vue')
+        },
+        {
+          path: '/business/payback',
+          component: () => import('./views/business/payback/index.vue')
         },
         {
           path: '/404',

@@ -93,6 +93,10 @@ export default {
             {
               index: '/business/apply',
               title: '商家申请'
+            },
+            {
+              index: '/business/payback',
+              title: '商家提现申请'
             }
           ]
         }

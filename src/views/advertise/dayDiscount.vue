@@ -91,7 +91,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="上架/下架"
+          label="下架/上架"
           width="100"
           align="center">
           <template slot-scope="scope">
@@ -265,7 +265,7 @@ export default {
         type: 'warning'
       }).then(() => {
         const url = `/api/admin/advert/goods/handle/${id}/success`
-        this.$axios.get(url).then(res => {
+        this.$axios.post(url).then(res => {
           this.getData(this.searchParams)
           this.$message.success('已处理')
         }).catch(() => {
@@ -280,7 +280,7 @@ export default {
         type: 'warning'
       }).then(() => {
         const url = `/api/admin/advert/goods/handle/${id}/fail`
-        this.$axios.get(url).then(res => {
+        this.$axios.post(url).then(res => {
           this.getData(this.searchParams)
           this.$message.success('已处理')
         }).catch(() => {
